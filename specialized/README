@@ -1,0 +1,1 @@
+This directory contains any specialized Shorten URL classes. These are branched from the master and include modifications to allow for easier integration to software. The software is based upon one that I and Cezz from XenForo's forums originally developed for XenForo. This is an example of a "specialized" version of Shorten URL and is included here.
