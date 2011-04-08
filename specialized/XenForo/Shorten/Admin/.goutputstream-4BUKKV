@@ -1,0 +1,96 @@
+<?php
+
+class Shorten_Admin_Render extends XenForo_ControllerAdmin_Abstract
+{
+	public function actionIndex()
+	{
+		XenForo_Application::autoload('Shorten_URL');
+		$methods = Shorten_URL::getMethodList();
+		$methodDetails = array();
+		$default = XenForo_Application::get('options')->suDefaultShortener;
+		foreach($methods as $method)
+		{
+			$class = 'Shorten_URL_' . $method;
+			XenForo_Application::autoload($class);
+			$methodDetails[$method] = call_user_func(array($class, 'about'));
+		}
+		return $this->responseView('XenForo_ViewAdmin_Su_Method_List', 'su_method_list', array('methods' => $methodDetails, 'page_title' => 'List of Methods', 'default' => $default));
+	}
+
+	public function actionDefault()
+	{
+		$method = $this->_input->filterSingle('shortName', XenForo_Input::STRING);
+		if ($this->isConfirmedPost())
+		{
+			$dw = XenForo_DataWriter::create('XenForo_DataWriter_Option');
+			$dw->setExistingData('suDefaultShortener');
+			$dw->set('option_value',$method);
+			$dw->save();
+			return $this->responseRedirect(XenForo_ControllerResponse_Redirect::SUCCESS, XenForo_Link::buildAdminLink('shortURL/'));
+		}
+		else // show confirmation dialog
+		{
+			$viewParams = array(
+				'method' => $method
+			);
+			return $this->responseView('XenForo_ViewAdmin_Su_Method_Default', 'su_method_defalt', $viewParams);		$method = $this->_input->filterSingle('shortName', XenForo_Input::STRING);
+		}
+	}
+
+	public function actionInstall()
+	{
+		$method = $this->_input->filterSingle('shortName', XenForo_Input::STRING);
+		if ($this->isConfirmedPost())
+		{
+			$class = 'Shorten_URL_'.$method;
+			XenForo_Application::autoload('Shorten_URL');
+			if($method == 'all') $install = Shorten_URL::initInstall(); 
+			else $install = Shorten_URL::install($class,$method);
+		return $this->responseRedirect(XenForo_ControllerResponse_Redirect::SUCCESS, XenForo_Link::buildAdminLink('shortURL/'));
+		
+		}
+		else // show confirmation dialog
+		{
+			$viewParams = array(
+				'method' => $method
+			);
+			return $this->responseView('XenForo_ViewAdmin_Su_Method_Install', 'su_method_install', $viewParams);
+		}
+	}
+
+	public function actionUninstall()
+	{
+		$method = $this->_input->filterSingle('shortName', XenForo_Input::STRING); 
+		if ($this->isConfirmedPost())
+		{
+			XenForo_Application::autoload('Shorten_URL');
+			$uninstall = Shorten_URL::uninstall($method);
+			if($uninstall != false) {
+			return $this->responseRedirect(XenForo_ControllerResponse_Redirect::SUCCESS, XenForo_Link::buildAdminLink('shortURL/'));
+			}
+		}
+		else // show confirmation dialog
+		{
+			$viewParams = array(
+				'method' => $method
+			);
+			return $this->responseView('XenForo_ViewAdmin_Su_Method_Uninstall', 'su_method_uninstall', $viewParams);
+		}
+	}
+
+	public function actionDetails()
+	{
+		$method = $this->_input->filterSingle('shortName', XenForo_Input::STRING);
+			$class = 'Shorten_URL_' . $method;
+			XenForo_Application::autoload($class);
+			$methodDetails = call_user_func(array($class, 'about'));
+			return $this->responseView('XenForo_ViewAdmin_Su_Method_Details', 'su_method_details', array('method' => $method, 'page_title' => 'Details about '.$method, 'methods' => $methodDetails));
+	}
+
+	public function actionInitinstall()
+	{
+		XenForo_Application::autoload('Shorten_URL');
+		$initinstall = Shorten_URL::initinstall();
+		return $this->responseRedirect(XenForo_ControllerResponse_Redirect::SUCCESS, XenForo_Link::buildAdminLink('shortURL/'));
+	}
+}

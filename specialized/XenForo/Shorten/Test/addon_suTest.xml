@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<addon addon_id="suTest" title="Short URL Tester" version_string="1.0.0" version_id="1" url="" install_callback_class="" install_callback_method="" uninstall_callback_class="" uninstall_callback_method="">
+  <admin_navigation>
+    <navigation navigation_id="shortURLtest" parent_navigation_id="ShortURL" display_order="2" link="shortURLtest" admin_permission_id="option" debug_only="0" hide_no_children="0"/>
+  </admin_navigation>
+  <admin_permissions/>
+  <admin_style_properties/>
+  <admin_templates>
+    <template title="sutest_method_list"><![CDATA[<xen:title>ShortURLtester<xen:if is="{$page_title}"> - {$page_title}</xen:if></xen:title>
+
+<xen:require css="filter_list.css" />
+<xen:require js="js/xenforo/filter_list.js" />
+
+<xen:form action="{xen:adminlink shortURLtest}" class="section">
+	<xen:if is="{$methods}">
+
+		<h2 class="subHeading">
+			<xen:include template="filter_list_controls" />
+			Methods Present
+		</h2>
+
+		<ol class="FilterList">
+			<xen:foreach loop="$methods" value="$method">					
+				<xen:listitem
+    					style="word-wrap:none;"              
+					id="{$method.shortName}"
+					label="{$method.longName}">
+					<xen:html>
+							<a href="{xen:adminlink 'shortURLtest/{$method.shortName}/test'}&url={$url}" class="secondaryContent OverlayTrigger">TEST</a>
+					</xen:html>
+				</xen:listitem>
+			</xen:foreach>
+		</ol>
+
+		<p class="sectionFooter">{xen:phrase showing_x_of_y_items, 'count=<span class="FilterListCount">{xen:count $methods}</span>', 'total={xen:count $methods}'}</p>
+
+	<xen:else />
+		<div class="noResults">No methods found check permissions on the folder library/Shorten/URL</div>
+	</xen:if>
+	<xen:textboxunit label="URL:" name="url" value="{$url}" />
+	<xen:submitunit save="Change"/>
+</xen:form>]]></template>
+    <template title="sutest_method_test"><![CDATA[<xen:title>Testing Method : {$details.name}</xen:title>
+
+<xen:form action="{xen:adminlink 'shortURL/{$method}/install'}" class="formOverlay">
+	<p>Method: {$details.name} Returned :</p>
+	<strong><a href="{$details.url}">{$details.url}</a></strong> 
+</xen:form>]]></template>
+  </admin_templates>
+  <code_events/>
+  <code_event_listeners/>
+  <cron/>
+  <email_templates/>
+  <optiongroups/>
+  <permissions>
+    <permission_groups/>
+    <permissions/>
+    <interface_groups/>
+  </permissions>
+  <phrases>
+    <phrase title="admin_navigation_shortURLtest" global_cache="0" version_id="1" version_string="1.0.0"><![CDATA[ShortURL Test]]></phrase>
+  </phrases>
+  <route_prefixes>
+    <route_type type="admin">
+      <prefix original_prefix="shortURLtest" class="Shorten_Test_Route" build_link="data_only"/>
+    </route_type>
+  </route_prefixes>
+  <style_properties/>
+  <templates/>
+</addon>

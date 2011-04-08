@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<addon addon_id="suOptions" title="ShortURL" version_string="v1.0.1" version_id="2" url="" install_callback_class="" install_callback_method="" uninstall_callback_class="" uninstall_callback_method="">
+  <admin_navigation>
+    <navigation navigation_id="ShortURL" parent_navigation_id="options" display_order="2" link="shortURL" admin_permission_id="option" debug_only="0" hide_no_children="0"/>
+  </admin_navigation>
+  <admin_permissions/>
+  <admin_style_properties/>
+  <admin_templates>
+    <template title="su_method_defalt"><![CDATA[<xen:title>Confirm Installation : {$method}</xen:title>
+<xen:h1>{xen:phrase su_askConfirmSetDefault, 'method={$method}'}</xen:h1>
+
+<xen:require css="delete_confirmation.css" />
+
+<xen:form action="{xen:adminlink 'shortURL/{$method}/default'}" class="deleteConfirmForm formOverlay">
+	<p>{xen:phrase su_confirmSetDefault}</p>
+	<strong><a href="{xen:adminlink 'shortURL/{$method}/details'}">{$method}</a></strong> 
+	<xen:submitunit save="{xen:phrase su_setDefault}" />
+	<input type="hidden" name="_xfConfirm" value="1" />
+</xen:form>]]></template>
+    <template title="su_method_details"><![CDATA[<xen:title>Method Details</xen:title>
+<xen:h1>Method Details</xen:h1>
+<xen:require css="delete_confirmation.css" />
+
+<form class="deleteConfirmForm formOverlay">
+<p>{xen:phrase su_methodName}: {$methods.longName}<br />
+{xen:phrase su_methodVersion}: {$methods.version}<br />
+{xen:phrase description}: {$methods.decription}<br />
+{xen:phrase su_methodAuthor}: {$methods.author}<br />
+{xen:phrase su_methodAvailable}: <xen:if is="{$methods.available}">{xen:phrase su_yes}<xen:else/>{xen:phrase no}</xen:if><br />
+Has Options: <xen:if is="{$methods.advanced}">{xen:phrase su_yes}<xen:else/>{xen:phrase no}</xen:if></p>
+</form>]]></template>
+    <template title="su_method_install"><![CDATA[<xen:title>Confirm Installation : {$method}</xen:title>
+<xen:h1>{xen:phrase su_askInstallMethod, 'method={$method}'}</xen:h1>
+
+<xen:require css="delete_confirmation.css" />
+
+<xen:form action="{xen:adminlink 'shortURL/{$method}/install'}" class="deleteConfirmForm formOverlay">
+	<p>{xen:phrase su_confirmInstallMethod}</p>
+	<strong><a href="{xen:adminlink 'shortURL/{$method}/details'}">{$method}</a></strong> 
+	<xen:submitunit save="{xen:phrase su_installMethod}" />
+	<input type="hidden" name="_xfConfirm" value="1" />
+</xen:form>]]></template>
+    <template title="su_method_list"><![CDATA[<xen:title>ShortURL - {xen:phrase su_listMethodsTItle}</xen:title>
+
+<xen:topctrl>
+		<a href="<xen:if is="{$xenOptions.suEnabled}">{xen:adminlink 'shortURL/off/toggle/'}<xen:else />{xen:adminlink 'shortURL/on/toggle/'}</xen:if>" class="button"><xen:if is="{$xenOptions.suEnabled}">- Disable<xen:else />+ Enable</xen:if> Services</a>
+		<a href="{xen:adminlink 'shortURL/all/install/'}" class="button">+ {xen:phrase su_installAll}</a>
+</xen:topctrl>
+
+<xen:require css="filter_list.css" />
+<xen:require js="js/xenforo/filter_list.js" />
+<style type="text/css">
+#listItem_{$default} {background: #D7EDFC;}
+
+<xen:foreach loop="$methods" value="$method"><xen:if is="!{$method.installed}">#listItem_{$method.shortName} {padding-left: 20px; background: url(styles/default/xenforo/permissions/deny.png) no-repeat 0% 50%;}</xen:if></xen:foreach>			
+</style>
+
+<xen:form action="{xen:adminlink twitter}" class="section">
+	<xen:if is="{$methods}">
+
+		<h2 class="subHeading">
+			<xen:include template="filter_list_controls" />
+			{xen:phrase su_methodsPresent}
+		</h2>
+
+		<ol class="FilterList">
+			<xen:foreach loop="$methods" value="$method">					
+				<xen:listitem
+    					style="word-wrap:none;"              
+					id="{$method.shortName}"
+					label="{$method.longName}"
+					snippet="{$method.decription}"
+					href="{xen:adminlink 'shortURL/{$method.shortName}/details/'}">					<xen:html>
+						<xen:popup title="{xen:phrase controls}" ctrlclass="toolsCtrl">
+							<xen:html>
+								<a href="{xen:adminlink 'shortURL/{$method.shortName}/details/'}" class="OverlayTrigger">{xen:phrase view}</a>
+								<xen:if is="{$method.shortName} != {$default} && {$method.installed}"><a href="{xen:adminlink 'shortURL/{$method.shortName}/default/'}" class="OverlayTrigger">{xen:phrase su_setDefault}</a></xen:if>
+								<xen:if is="{$method.installed} && {$method.advanced}"><a href="{xen:adminlink 'shortURL/{$method.shortName}/options/'}" class="OverlayTrigger">{xen:phrase su_setOptions}</a></xen:if>
+								<xen:if is="{$method.installed} && {$method.advanced}"><a href="{xen:adminlink 'shortURL/{$method.shortName}/uninstall/'}" class="OverlayTrigger">{xen:phrase uninstall}</a></xen:if>
+								<xen:if is="!{$method.installed} && {$method.advanced}"><a href="{xen:adminlink 'shortURL/{$method.shortName}/install/'}" class="OverlayTrigger">{xen:phrase su_installMethod}</a></xen:if>
+							</xen:html>
+						</xen:popup>
+					</xen:html>
+				</xen:listitem>
+			</xen:foreach>
+		</ol>
+
+		<p class="sectionFooter">{xen:phrase showing_x_of_y_items, 'count=<span class="FilterListCount">{xen:count $methods}</span>', 'total={xen:count $methods}'}</p>
+
+	<xen:else />
+		<div class="noResults">{xen:phrase su_noMethods}</div>
+	</xen:if>
+</xen:form>]]></template>
+    <template title="su_method_options"><![CDATA[<xen:title>{$method} : {xen:phrase options}</xen:title>
+
+<xen:form action="{xen:adminlink 'options/save', $group}">
+
+	<xen:foreach loop="$renderedOptions" value="$_group">
+		<fieldset>
+			<xen:foreach loop="$_group" value="$renderedOption">
+				{xen:raw $renderedOption}
+			</xen:foreach>
+		</fieldset>
+	</xen:foreach>
+
+	<xen:submitunit save="{xen:phrase save_changes}"/>
+</xen:form>]]></template>
+    <template title="su_method_uninstall"><![CDATA[<xen:title>Confirm Uninstall : {$method}</xen:title>
+<xen:h1>{xen:phrase su_askConfirmUninstallMethod, 'method={$method}'}</xen:h1>
+
+<xen:require css="delete_confirmation.css" />
+
+<xen:form action="{xen:adminlink 'shortURL/{$method}/uninstall'}" class="deleteConfirmForm formOverlay">
+	<p>{xen:phrase su_confirmUninstallMethod}</p>
+	<strong><a href="{xen:adminlink 'shortURL/{$method}/details'}">{$method}</a></strong> 
+	<xen:submitunit save="{xen:phrase uninstall}" />
+	<input type="hidden" name="_xfConfirm" value="1" />
+</xen:form>]]></template>
+    <template title="su_method_uninstall_default"><![CDATA[<xen:title>Confirm Installation : {$method}</xen:title>
+<xen:h1>{xen:phrase su_attemptingUninstall}</xen:h1>
+
+<xen:require css="delete_confirmation.css" />
+
+<p>{xen:phrase su_attemptingUninstallRetry}</p>
+]]></template>
+  </admin_templates>
+  <code_events/>
+  <code_event_listeners/>
+  <cron/>
+  <email_templates/>
+  <optiongroups>
+    <group group_id="suOptions" display_order="1" debug_only="1"/>
+    <option option_id="suDefaultShortener" edit_format="textbox" data_type="string" can_backup="1">
+      <default_value>kwnme</default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="suOptions" display_order="1"/>
+    </option>
+    <option option_id="suEnabled" edit_format="onoff" data_type="string" can_backup="1">
+      <default_value>1</default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="suOptions" display_order="1"/>
+    </option>
+    <option option_id="suMethod_awesm_API" edit_format="textbox" data_type="string" can_backup="1">
+      <default_value></default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="suOptions" display_order="3"/>
+    </option>
+    <option option_id="suMethod_kwnme_domain" edit_format="textbox" data_type="string" can_backup="1">
+      <default_value>kwn.me</default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="suOptions" display_order="2"/>
+    </option>
+  </optiongroups>
+  <permissions>
+    <permission_groups/>
+    <permissions/>
+    <interface_groups/>
+  </permissions>
+  <phrases>
+    <phrase title="admin_navigation_ShortURL" global_cache="0" version_id="1" version_string="1.0.0"><![CDATA[ShortURL Methods]]></phrase>
+    <phrase title="Available" global_cache="0" version_id="1" version_string="1.0.0"><![CDATA[su_methodAvailable]]></phrase>
+    <phrase title="option_group_suOptions" global_cache="0" version_id="1" version_string="1.0.0"><![CDATA[ShortURL Options]]></phrase>
+    <phrase title="option_group_suOptions_description" global_cache="0" version_id="1" version_string="1.0.0"><![CDATA[Options for the Global ShortURL addon's and all modules that require settings.]]></phrase>
+    <phrase title="option_suDefaultShortener" global_cache="0" version_id="1" version_string="1.0.0"><![CDATA[Default Shortener]]></phrase>
+    <phrase title="option_suDefaultShortener_explain" global_cache="0" version_id="1" version_string="1.0.0"><![CDATA[This is the Default Shortener to use if the addon doesn't specify one.]]></phrase>
+    <phrase title="option_suEnabled" global_cache="0" version_id="1" version_string="1.0.0"><![CDATA[ShortURL enabled]]></phrase>
+    <phrase title="option_suEnabled_explain" global_cache="0" version_id="1" version_string="1.0.0"><![CDATA[If Disabled Mods are instructed to use their own internal short URL classes/use full URL.]]></phrase>
+    <phrase title="option_suMethod_awesm_API" global_cache="0" version_id="1" version_string="v1.0.0"><![CDATA[Awe.sm API Key (Required)]]></phrase>
+    <phrase title="option_suMethod_awesm_API_explain" global_cache="0" version_id="1" version_string="v1.0.0"><![CDATA[Enter your Awe.sm API key here]]></phrase>
+    <phrase title="option_suMethod_kwnme_domain" global_cache="0" version_id="1" version_string="v1.0.0"><![CDATA[kwn.me Domain.]]></phrase>
+    <phrase title="option_suMethod_kwnme_domain_explain" global_cache="0" version_id="1" version_string="v1.0.0"><![CDATA[Custom domain for kwn.me engine (optional)]]></phrase>
+    <phrase title="su_askConfirmSetDefault" global_cache="0" version_id="1" version_string="1.0.0"><![CDATA[Are you sure you want to set {method} as default]]></phrase>
+    <phrase title="su_askConfirmUninstallMethod" global_cache="0" version_id="1" version_string="1.0.0"><![CDATA[Please Confirm removal of {method}'s settings]]></phrase>
+    <phrase title="su_askInstallMethod" global_cache="0" version_id="1" version_string="1.0.0"><![CDATA[Are you sure you want to install {method} and it's settings]]></phrase>
+    <phrase title="su_attemptingUninstall" global_cache="0" version_id="1" version_string="v1.0.0"><![CDATA[Attempting to uninstall the default...]]></phrase>
+    <phrase title="su_attemptingUninstallRetry" global_cache="0" version_id="1" version_string="v1.0.0"><![CDATA[You are attempting to uninstall the default shortener. Please change the default and retry.]]></phrase>
+    <phrase title="su_confirmInstallMethod" global_cache="0" version_id="1" version_string="1.0.0"><![CDATA[Please Confirm you want install all options from method:]]></phrase>
+    <phrase title="su_confirmSetDefault" global_cache="1" version_id="1" version_string="1.0.0"><![CDATA[Please Confirm you want to set following method as default:]]></phrase>
+    <phrase title="su_confirmUninstallMethod" global_cache="0" version_id="1" version_string="1.0.0"><![CDATA[Please Confirm you want to remove all options from method:]]></phrase>
+    <phrase title="su_installAll" global_cache="1" version_id="1" version_string="1.0.0"><![CDATA[Install All]]></phrase>
+    <phrase title="su_installMethod" global_cache="1" version_id="1" version_string="1.0.0"><![CDATA[Install]]></phrase>
+    <phrase title="su_listMethodsTItle" global_cache="0" version_id="1" version_string="1.0.0"><![CDATA[List of Methods]]></phrase>
+    <phrase title="su_methodAuthor" global_cache="0" version_id="1" version_string="1.0.0"><![CDATA[Author]]></phrase>
+    <phrase title="su_methodAvailable" global_cache="0" version_id="1" version_string="v1.0.0"><![CDATA[Available]]></phrase>
+    <phrase title="su_methodName" global_cache="1" version_id="1" version_string="1.0.0"><![CDATA[Method Name]]></phrase>
+    <phrase title="su_methodsPresent" global_cache="1" version_id="1" version_string="1.0.0"><![CDATA[Methods Present]]></phrase>
+    <phrase title="su_methodVersion" global_cache="1" version_id="1" version_string="1.0.0"><![CDATA[Version]]></phrase>
+    <phrase title="su_noMethods" global_cache="1" version_id="1" version_string="1.0.0"><![CDATA[No methods found check permissions on the folder library/Shorten/URL]]></phrase>
+    <phrase title="su_setDefault" global_cache="0" version_id="1" version_string="1.0.0"><![CDATA[Set Default]]></phrase>
+    <phrase title="su_setOptions" global_cache="1" version_id="1" version_string="v1.0.0"><![CDATA[Options]]></phrase>
+    <phrase title="su_yes" global_cache="0" version_id="1" version_string="1.0.0"><![CDATA[Yes]]></phrase>
+  </phrases>
+  <route_prefixes>
+    <route_type type="admin">
+      <prefix original_prefix="shortURL" class="Shorten_Admin_Route" build_link="data_only"/>
+    </route_type>
+  </route_prefixes>
+  <style_properties/>
+  <templates/>
+</addon>
